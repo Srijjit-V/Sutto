@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
-import { Sparkles, Coins, Flame, Store } from "lucide-react";
+import { Sparkles, Coins, Flame, Store, Compass } from "lucide-react";
 import { useProgressStore, hydrateProgressStore } from "@/lib/game/store";
 import { Mascot } from "./Mascot";
 
@@ -34,6 +34,12 @@ export function Header() {
         <span className="clay-card flex items-center gap-1.5 px-3 py-1.5 bg-[var(--accent)] text-[var(--accent-foreground)]">
           <Flame className="size-4" aria-hidden /> {streak}
         </span>
+        <Link
+          href="/explore"
+          className="clay-btn flex items-center gap-1.5 px-4 py-1.5 bg-[var(--secondary)] text-[var(--secondary-foreground)] font-bold"
+        >
+          <Compass className="size-4" aria-hidden /> Explore
+        </Link>
         <Link
           href="/shop"
           className="clay-btn flex items-center gap-1.5 px-4 py-1.5 bg-[var(--primary)] text-[var(--primary-foreground)] font-bold"
