@@ -1,5 +1,6 @@
 # sql-engine
 
-sql.js (SQLite/WASM) wrapper. Runs inside a Web Worker with a query timeout
-and complexity/row-count cap so a runaway query can't freeze the main thread.
-Not yet implemented — see .project-memory/STATE.md for next steps.
+sql.js (SQLite/WASM) running inside a Web Worker (`sql.worker.ts`). The
+client wrapper (`client.ts`) enforces a hard query timeout by terminating
+and recreating the worker if a query doesn't respond in time, since a
+synchronous WASM computation can't be cooperatively cancelled.
