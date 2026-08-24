@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- shadcn-style project structure: `components.json`, `src/lib/utils.ts`
+  (`cn()`), and shadcn semantic color tokens (primary/secondary/destructive/
+  accent/ring/etc.) mapped onto the existing Fall-Guys-2D palette.
+- `Badge` and `Button` primitives in `src/components/ui/`.
+- `HeroStaticRadialGradient` (animated shader hero, via
+  `@paper-design/shaders-react`) and `ScrollRevealImage` (framer-motion
+  scroll-driven zoom/reveal) components in `src/components/ui/`.
+- Home page redesign: an animated gradient hero (`LandingHero`) with a
+  "Start Chapter 1" CTA and tech badges (lucide-react icons), a short
+  cinematic scroll-reveal showcase section (`ScrollShowcase`), then the
+  existing chapter map below. This is the one deliberately higher-motion
+  section of the app — everything past the hero stays low-animation per
+  the existing design decision.
+- `next.config.ts`: allow `images.unsplash.com` for `next/image`.
 - Initial project scaffold: Next.js (App Router) + TypeScript + Tailwind CSS.
 - Core dependencies installed: `sql.js`, `zustand`, `framer-motion`,
   `@upstash/redis`, `@upstash/ratelimit`, `@google/generative-ai`.

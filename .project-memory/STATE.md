@@ -10,9 +10,16 @@ visual style, deployed entirely on Vercel.
 0.1.0
 
 ## Status
-🟢 Playable vertical slice — Chapter 1 is fully working end-to-end.
+🟢 Playable vertical slice — Chapter 1 is fully working end-to-end, plus a
+polished landing page (hero + scroll showcase) so the first impression
+isn't just plain cards.
 
 ## Last completed
+- shadcn-style infra: `components.json`, `src/lib/utils.ts`, semantic color
+  tokens layered onto the existing palette; `Badge`/`Button` primitives.
+- Animated shader hero (`HeroStaticRadialGradient`, `@paper-design/shaders-react`)
+  and scroll-reveal image section (`ScrollRevealImage`, framer-motion) on
+  the home page — the one deliberately higher-motion section of the app.
 - Mascot ("Nibble") with 5 states, low-animation per design decision.
 - Design tokens / chunky-card visual style in `globals.css`.
 - sql.js Web Worker engine with hard query timeout + single-statement guard.

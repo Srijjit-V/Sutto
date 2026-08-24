@@ -20,6 +20,23 @@
   --shadow-chunky: 4px 4px 0 var(--color-border);
   --shadow-chunky-sm: 2px 2px 0 var(--color-border);
   --radius-chunky: 20px;
+
+  /* shadcn/ui standard semantic tokens, mapped onto our palette so Button/
+     Badge/etc. from shadcn "just work" without inventing a second palette. */
+  --primary: var(--color-coral);
+  --primary-foreground: #2b2140;
+  --secondary: var(--color-sky);
+  --secondary-foreground: #2b2140;
+  --destructive: #e5484d;
+  --destructive-foreground: #ffffff;
+  --accent: var(--color-sunny);
+  --accent-foreground: #2b2140;
+  --card: var(--color-card);
+  --card-foreground: var(--foreground);
+  --border: var(--color-border);
+  --input: var(--color-border);
+  --ring: var(--color-plum);
+  --radius: 0.75rem;
 }
 
 @theme inline {
@@ -32,6 +49,20 @@
   --color-plum: var(--color-plum);
   --color-card: var(--color-card);
   --color-border: var(--color-border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-md: var(--radius);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -41,7 +72,14 @@
     --background: #201a2e;
     --foreground: #f5efe6;
     --color-card: #2b2140;
+    --card: #2b2140;
+    --card-foreground: #f5efe6;
     --color-border: #f5efe6;
+    --border: #f5efe6;
+    --input: #f5efe6;
+    --primary-foreground: #201a2e;
+    --secondary-foreground: #201a2e;
+    --accent-foreground: #201a2e;
   }
 }
 
