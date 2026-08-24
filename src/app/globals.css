@@ -1,26 +1,82 @@
 @import "tailwindcss";
 
+/*
+  QueryQuest design tokens — "Fall Guys but 2D": chunky, colorful, toy-like.
+  Low animation budget by design (see .project-memory/DECISIONS.md) — most
+  UI states are plain color/shape changes, not motion.
+*/
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fdf6ec;
+  --foreground: #2b2140;
+
+  --color-coral: #ff6b6b;
+  --color-sunny: #ffd166;
+  --color-sky: #4ecdc4;
+  --color-grass: #7bd389;
+  --color-plum: #5c4b8a;
+  --color-card: #ffffff;
+  --color-border: #2b2140;
+
+  --shadow-chunky: 4px 4px 0 var(--color-border);
+  --shadow-chunky-sm: 2px 2px 0 var(--color-border);
+  --radius-chunky: 20px;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-coral: var(--color-coral);
+  --color-sunny: var(--color-sunny);
+  --color-sky: var(--color-sky);
+  --color-grass: var(--color-grass);
+  --color-plum: var(--color-plum);
+  --color-card: var(--color-card);
+  --color-border: var(--color-border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #201a2e;
+    --foreground: #f5efe6;
+    --color-card: #2b2140;
+    --color-border: #f5efe6;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Shared "chunky card" look: bold border + offset drop shadow, no blur. */
+.chunky-card {
+  background: var(--color-card);
+  border: 3px solid var(--color-border);
+  border-radius: var(--radius-chunky);
+  box-shadow: var(--shadow-chunky);
+}
+
+.chunky-btn {
+  border: 3px solid var(--color-border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-chunky-sm);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.chunky-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--color-border);
+}
+
+/* Brief pop when the mascot's state changes — not a looping animation. */
+@keyframes mascot-pop {
+  0% {
+    transform: scale(0.85);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
