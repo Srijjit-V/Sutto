@@ -2,7 +2,7 @@
 
 ## Decision: Deploy entirely on Vercel, not GitHub Pages
 **Date:** 2026-08-24
-**Status:** active
+**Status:** superseded by "Remove the AI hint helper" below
 **Decision:** Host the whole app — static frontend and a single serverless
 `/api/ai-hint` function — on Vercel.
 **Reason:** The app needs somewhere to hold the Gemini API key server-side and
@@ -11,8 +11,9 @@ either. Vercel supports both in one deploy.
 **Alternatives considered:** GitHub Pages + a separate Cloudflare Worker for
 the AI proxy (two deploys to manage, no real benefit over just using Vercel
 for everything).
-**Consequences:** One Vercel project, one set of environment variables to
-manage. No separate static host.
+**Consequences:** Now that there's no server-side route at all, the app is
+back to being deployable as plain static output — GitHub Pages is viable
+again if desired, though Vercel still works fine too.
 
 ## Decision: sql.js (SQLite via WASM) run in a Web Worker
 **Date:** 2026-08-24
@@ -45,7 +46,7 @@ devices, until a future cloud-sync feature ships.
 
 ## Decision: AI hint helper — Gemini free tier, proxied server-side, rate-limited
 **Date:** 2026-08-24
-**Status:** active
+**Status:** reversed 2026-08-24 (see "Remove the AI hint helper" below)
 **Decision:** The only server-side logic in the app is `/api/ai-hint`, which
 calls Google Gemini's free tier (`gemini-2.0-flash` or current free-tier
 equivalent). The API key lives only in a Vercel environment variable. The
@@ -60,6 +61,22 @@ tier changes); client-side BYO-key model (rejected — worse UX, and the user
 chose the Vercel-proxy approach explicitly).
 **Consequences:** Adds one external dependency (Upstash) beyond Vercel +
 Gemini, but keeps the free tier real cost at $0 for expected usage levels.
+
+## Decision: Remove the AI hint helper
+**Date:** 2026-08-24
+**Status:** active
+**Decision:** Deleted `/api/ai-hint`, `src/lib/ai/`, and the `HintPanel`
+component entirely, along with the `@google/generative-ai`, `@upstash/redis`,
+and `@upstash/ratelimit` dependencies. The app is now 100% client-side again.
+**Reason:** Explicit user request ("take out the ai").
+**Alternatives considered:** Keeping the route but disabling it in the UI
+(rejected — the user asked for it gone, and dead server code with unused
+security controls is worse than no server code at all).
+**Consequences:** No more server-side surface area at all, so the earlier
+Vercel-vs-GitHub-Pages hosting question is reopened (see that decision above)
+and every security control that existed only for this feature (rate
+limiting, prompt-injection guarding, key handling) is now moot — there's
+nothing server-side left to secure.
 
 ## Decision: Chapter-gated linear progression + cosmetic-only item shop
 **Date:** 2026-08-24
@@ -80,7 +97,7 @@ items list in localStorage); no economy tuning needed yet.
 
 ## Decision: Low-animation "Fall Guys but 2D" visual direction
 **Date:** 2026-08-24
-**Status:** active
+**Status:** superseded by "Claymorphism via ui-ux-pro-max" below
 **Decision:** Chunky, colorful, toy-like shapes and mascot design, but a
 deliberately low animation budget — mostly static UI with simple fades/
 slides, and only a couple of real celebration animations (level-up, chapter
@@ -91,3 +108,48 @@ direction was scaled back ("less animation now").
 animation (this was the original plan; superseded by this decision).
 **Consequences:** Framer Motion is still a dependency but used sparingly;
 most UI state changes should be plain CSS transitions.
+
+## Decision: Claymorphism visual system via the `ui-ux-pro-max` skill
+**Date:** 2026-08-24
+**Status:** active
+**Decision:** Installed the `ui-ux-pro-max` Claude Code skill
+(`.claude/skills/ui-ux-pro-max/`) and ran its design-system search for a
+"kids educational game" product type. Adopted its recommendation:
+Claymorphism style (soft 3D, chunky, thick borders, double shadows, 16-24px
+radius), Baloo 2 / Comic Neue fonts, and its indigo/orange color palette —
+replacing the earlier hand-picked "Fall Guys 2D" palette. Also applied its
+checklist items we were violating: replaced all emoji-as-icons with
+`lucide-react`, added `cursor-pointer` to clickable elements, and made the
+mascot's continuous idle animation (blink + bob, added per user request)
+respect `prefers-reduced-motion`.
+**Reason:** The user explicitly asked for the previously-installed
+`ui-ux-pro-max` skill to actually be used, not just referenced/saved as a
+memory. It produced a concrete, sourced design system rather than an
+arbitrary one.
+**Alternatives considered:** Continuing with the hand-rolled palette
+(rejected — the point was to actually use the skill's output).
+**Consequences:** Dark mode was dropped (the skill's data flags it as
+"conditional/avoid" for this product type and style) — the app is
+light-mode only now, which also matches the "very basic UI" request.
+
+## Decision: Zustand persist — `skipHydration` + explicit rehydrate on mount
+**Date:** 2026-08-24
+**Status:** active
+**Decision:** The progress store's `persist` middleware now sets
+`skipHydration: true`; `Header` calls `hydrateProgressStore()` in a
+`useEffect` on mount instead of relying on automatic hydration.
+**Reason:** Found via manual browser testing (a fresh-tab/cleared-
+localStorage check, done specifically to rule out stale console-log
+history) — with automatic hydration, the client's first render already
+reflects localStorage while the server-rendered HTML always shows the
+zero-state default, which is a genuine React hydration-mismatch error, not
+a cosmetic one. This is a well-known zustand-persist + SSR interaction, not
+specific to this app.
+**Alternatives considered:** Ignoring the warning (rejected — it's a real
+correctness issue, and mismatches like this can cause visible flicker or
+incorrect DOM state in edge cases); wrapping every persisted-value read in
+a "mounted" check at each call site (rejected — more scattered than fixing
+it once at the store level).
+**Consequences:** There's a brief instant on first load where the header
+shows 0 XP/coins/streak before flipping to the real persisted values (once
+`hydrateProgressStore()` runs) — acceptable for this app's scale.

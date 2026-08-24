@@ -19,6 +19,31 @@ All notable changes to this project will be documented in this file.
   section of the app — everything past the hero stays low-animation per
   the existing design decision.
 - `next.config.ts`: allow `images.unsplash.com` for `next/image`.
+- Installed the `ui-ux-pro-max` Claude Code skill and used its
+  design-system search for a "kids educational game" product type. Applied
+  its recommendation across the app: **Claymorphism** style (soft 3D,
+  thick borders, double shadows), **Baloo 2 / Comic Neue** fonts, and a new
+  indigo/orange color palette (replacing the earlier hand-picked one).
+  Light mode only (the skill flags dark mode as best avoided for this
+  product type).
+- Replaced every emoji-as-icon (✨🪙🔥🔒✅▶️💡) with `lucide-react` icons,
+  per the skill's style checklist.
+- Mascot ("Nibble"): added a continuous idle blink and gentle bob, both
+  automatically disabled under `prefers-reduced-motion`.
+- Added `cursor-pointer` to all clickable elements (checklist item).
+
+### Removed
+- The AI hint helper, entirely: `/api/ai-hint`, `src/lib/ai/`,
+  `HintPanel`, and the `@google/generative-ai`/`@upstash/redis`/
+  `@upstash/ratelimit` dependencies. The app is fully client-side again —
+  no server routes, no API keys, no rate limiting to reason about.
+
+### Fixed
+- A real SSR hydration-mismatch bug in the Zustand progress store
+  (localStorage-persisted state rendered differently on server vs. first
+  client paint). Fixed via `skipHydration` + an explicit post-mount
+  rehydrate call. Found via manual fresh-tab browser testing, not by
+  reading the build/lint output.
 - Initial project scaffold: Next.js (App Router) + TypeScript + Tailwind CSS.
 - Core dependencies installed: `sql.js`, `zustand`, `framer-motion`,
   `@upstash/redis`, `@upstash/ratelimit`, `@google/generative-ai`.

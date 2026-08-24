@@ -59,6 +59,24 @@ export const useProgressStore = create<ProgressState>()(
         return true;
       },
     }),
-    { name: "queryquest-progress" }
+    {
+      name: "queryquest-progress",
+      // Skip auto-hydration on store creation: with Next.js SSR, the server
+      // has no localStorage, so it always renders the default (zero) state.
+      // If the client rehydrated synchronously during store creation, its
+      // very first render would already show the real persisted values —
+      // mismatching the server-rendered HTML and triggering a hydration
+      // error. Instead we hydrate explicitly, after mount (see
+      // useHydrateProgressStore below), so the first client render matches
+      // the server, then updates a moment later like any normal state change.
+      skipHydration: true,
+    }
   )
 );
+
+/** Call once, client-side, after mount (e.g. in a top-level layout effect)
+ * to load persisted progress from localStorage. See the skipHydration note
+ * above for why this isn't automatic. */
+export function hydrateProgressStore() {
+  useProgressStore.persist.rehydrate();
+}

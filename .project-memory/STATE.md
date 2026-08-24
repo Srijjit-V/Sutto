@@ -2,77 +2,74 @@
 
 ## Purpose
 A gamified, story-driven web app that teaches SQL through chapter-gated
-challenges (real in-browser SQL via sql.js), spaced-repetition flashcards, a
-cosmetic item shop, and an AI hint helper — chunky/colorful "Fall Guys but 2D"
-visual style, deployed entirely on Vercel.
+challenges (real in-browser SQL via sql.js) and a cosmetic item shop.
+Claymorphism visual style (chosen via the `ui-ux-pro-max` skill), Baloo 2 /
+Comic Neue fonts, mascot with idle blink/bob. Fully client-side — no
+backend, no accounts, no AI helper (removed per user request).
 
 ## Version
 0.1.0
 
 ## Status
-🟢 Playable vertical slice — Chapter 1 is fully working end-to-end, plus a
-polished landing page (hero + scroll showcase) so the first impression
-isn't just plain cards.
+🟢 Playable vertical slice — Chapter 1 fully working, redesigned visual
+system applied end-to-end, verified with zero console errors on a fresh
+page load.
 
 ## Last completed
-- shadcn-style infra: `components.json`, `src/lib/utils.ts`, semantic color
-  tokens layered onto the existing palette; `Badge`/`Button` primitives.
-- Animated shader hero (`HeroStaticRadialGradient`, `@paper-design/shaders-react`)
-  and scroll-reveal image section (`ScrollRevealImage`, framer-motion) on
-  the home page — the one deliberately higher-motion section of the app.
-- Mascot ("Nibble") with 5 states, low-animation per design decision.
-- Design tokens / chunky-card visual style in `globals.css`.
-- sql.js Web Worker engine with hard query timeout + single-statement guard.
-- Zustand + localStorage progress store (XP, coins, streak, completed
-  challenges, owned shop items).
-- Chapter 1 ("Nibble's Snack Shop"): 4 challenges covering SELECT, WHERE,
-  ORDER BY, DISTINCT, with a real answer checker.
-- Chapter map, challenge list, and SQL playground pages.
-- Cosmetic item shop page.
-- `/api/ai-hint` route (Gemini + Upstash rate limiting + prompt-injection
-  guard), with graceful fallback when unconfigured.
-- Verified in a real browser: correct/incorrect query paths both work,
-  XP/coins/streak persist, mascot reacts correctly to each outcome.
-- Fixed a real bug found during verification: sql.js's wasm file wasn't
-  loading inside the Web Worker (wrong locateFile resolution).
+- Installed and actually used the `ui-ux-pro-max` skill
+  (`.claude/skills/ui-ux-pro-max/`) — ran its design-system search for a
+  "kids educational game" product type and applied the result: Claymorphism
+  style, Baloo 2/Comic Neue fonts, indigo/orange palette, light-mode only.
+- Replaced all emoji-as-icons with `lucide-react`; added `cursor-pointer`
+  to clickable elements — both per the skill's checklist.
+- Mascot ("Nibble"): idle blink + gentle bob, disabled under
+  `prefers-reduced-motion`.
+- Removed the AI hint feature entirely (route, lib, component, deps) per
+  user request — app is 100% client-side now.
+- Redesigned the SQL playground/challenge UI with the new clay-card style.
+- Found and fixed a real bug via manual testing: a Zustand-persist SSR
+  hydration mismatch (fixed with `skipHydration` + explicit post-mount
+  rehydrate). Verified fixed with a completely fresh tab + cleared
+  localStorage (zero console errors, vs. a real hydration error before).
+- shadcn infra + animated hero (`HeroStaticRadialGradient`) + scroll-reveal
+  showcase (`ScrollRevealImage`) on the landing page (from a prior pass).
 
 ## Active work
 None — this pass is complete. Next session should pick up from "Next steps"
 below.
 
 ## Known issues / simplifications (intentional, for v1)
-- Answer checking uses an exact expected-result-set match (with an
-  order-insensitive mode for DISTINCT/GROUP BY-style queries) rather than
-  semantic SQL comparison — a correct-but-differently-written query that
-  produces different column names or ordering may be marked incorrect.
-- The block-coding (Scratch-style) editor toggle is not built yet — only
-  the plain text SQL editor exists so far.
-- Flashcard section is not built yet.
-- `/api/ai-hint` has not been tested against a real Gemini/Upstash key yet
-  (works correctly in its "unconfigured" fallback path, verified in-browser).
+- Answer checking uses an exact expected-result-set match (order-
+  insensitive for DISTINCT/GROUP BY-style queries) rather than semantic SQL
+  comparison.
+- No block-coding (Scratch-style) editor toggle yet — text editor only.
+- No flashcard section yet.
 - Chapters 2–7 are placeholder "Coming soon" entries with no content.
-- Deployment to Vercel is still unresolved — see below.
+- Brief flash of 0 XP/coins/streak on first paint before the progress
+  store rehydrates from localStorage (a few ms, standard tradeoff of the
+  `skipHydration` fix — see DECISIONS.md).
+- Not deployed anywhere yet (Vercel connector issue from an earlier
+  session is still unresolved, though moot now that there's no server-side
+  route requiring Vercel specifically — GitHub Pages is viable again).
+- No automated test suite yet (Vitest/Playwright installed, no test files).
 
 ## Next steps
-1. Build the flashcard review section (spaced repetition).
+1. Build Chapter 2 (Filtering & Sorting) content.
 2. Build the Scratch-style block-coding editor toggle.
-3. Write Chapter 2 (Filtering & Sorting) content.
-4. Get a real Gemini API key + Upstash Redis credentials and test
-   `/api/ai-hint` end-to-end (currently only verified in its fallback path).
-5. Resolve the Vercel deployment permission issue (the connector used in
-   this session could create one deployment but then got 403'd on
-   redeploys/reads — likely a role/permission setting on the user's Vercel
-   team, needs checking in the Vercel dashboard directly) and get the
-   GitHub → Vercel auto-deploy link working.
-6. Consider adding Playwright e2e coverage for the challenge flow now that
-   it exists and works.
+3. Build the flashcard review section.
+4. Decide on and set up actual deployment (GitHub Pages is viable again
+   now that the app is fully static; or retry Vercel).
+5. Add Playwright e2e coverage for the challenge flow.
 
 ## Last validation
 `npm run lint`, `npx tsc --noEmit`, and `npm run build` all pass clean.
-Manually verified in a real browser (Chapter 1, challenges 2 and 3): correct
-query → XP/coins/streak update + celebrating mascot; incorrect query →
-correct rejection reason + confused mascot. No automated test suite yet
-(Vitest/Playwright are installed but no test files written).
+Manually verified in the browser across two passes:
+1. Full redesign render (hero, mascot, challenge UI) at desktop width.
+2. A completely fresh tab with `localStorage.clear()` first, confirming
+   zero console errors (previously masked a real hydration bug behind
+   stale accumulated console history from earlier in the session).
+Both the correct-answer and already-solved states were re-verified after
+the redesign; XP/coins/streak update correctly.
 
 ## Updated
 2026-08-24

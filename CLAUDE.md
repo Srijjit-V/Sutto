@@ -2,39 +2,39 @@
 
 ## Purpose
 A gamified, story-driven web app that teaches SQL. Players work through
-linear, gated chapters of hands-on SQL challenges (run against a real
-in-browser SQLite engine via `sql.js`), review with spaced-repetition
-flashcards, earn coins to buy cosmetic items, and can ask a mascot character
-for AI-generated hints. Visual style is "Fall Guys but 2D" — chunky, colorful,
-low-animation. See `.project-memory/DECISIONS.md` for the full architecture
-rationale and `README.md` for setup/run instructions.
+linear, gated chapters of hands-on SQL challenges run against a real
+in-browser SQLite engine (`sql.js`), and earn coins to buy cosmetic items.
+The mascot, Nibble, blinks and bobs gently while idle and reacts to your
+answers. Visual style is Claymorphism (soft 3D, chunky, toy-like — chosen
+via the `ui-ux-pro-max` skill for a "kids educational game" product type).
+Fully client-side: no backend, no accounts, no API keys. See
+`.project-memory/DECISIONS.md` for the full architecture rationale and
+`README.md` for setup/run instructions.
 
 ## Architecture
-- **Frontend**: Next.js (App Router) + TypeScript + Tailwind CSS, deployed on
-  Vercel.
+- **Frontend**: Next.js (App Router) + TypeScript + Tailwind CSS. Fully
+  static/client-side — no server-side routes or secrets.
 - **SQL engine**: `sql.js` (SQLite/WASM) runs entirely client-side inside a
   Web Worker (`src/lib/sql-engine/`), with a query timeout and complexity cap
-  so a runaway query can't freeze the tab. There is no server-side database.
-- **AI hint helper**: the ONLY server-side piece. A single serverless route,
-  `src/app/api/ai-hint/`, calls Google Gemini's free tier. The Gemini API key
-  lives only in a Vercel environment variable — it must never be read from
-  client code or shipped in the browser bundle. This route is rate-limited
-  via Upstash Redis (`@upstash/ratelimit`), token-bucket per session-id + per-IP.
-  User query/error text is always treated as quoted data in the AI prompt,
-  never as instructions (prompt-injection guard), and is length-capped.
-- **Progress/state**: Zustand + `localStorage`. No accounts, no auth, in v1 —
+  so a runaway query can't freeze the tab.
+- **Progress/state**: Zustand + `localStorage`. No accounts, no auth —
   progress is local to the browser only.
-- **Game content**: `src/lib/game/` — chapter definitions, challenges, expected
-  result sets, flashcard decks, shop items.
-- **Design system**: generated via the `ui-ux-pro-max-skill` Claude Code skill,
-  audited with the `impeccable` skill/plugin (installed).
+- **Game content**: `src/lib/game/` — chapter definitions, challenges,
+  expected result sets, shop items.
+- **Design system**: Claymorphism, generated via the `ui-ux-pro-max` skill
+  (installed at `.claude/skills/ui-ux-pro-max/` — restart Claude Code to
+  pick it up as a first-class skill; until then its scripts can be run
+  directly, e.g. `python3 .claude/skills/ui-ux-pro-max/scripts/search.py
+  "<query>" --design-system`). Fonts: Baloo 2 (headings) / Comic Neue (body).
+- **shadcn-style UI primitives**: `src/components/ui/` (`Button`, `Badge`,
+  plus the animated `HeroStaticRadialGradient` and `ScrollRevealImage`
+  components used on the landing page only).
 
 ## Important paths
-- `src/app/api/ai-hint/` — the one serverful route; holds the Gemini key + rate limiter.
 - `src/lib/sql-engine/` — sql.js Web Worker wrapper, query execution + safety caps.
-- `src/lib/ai/` — prompt construction for the AI hint helper (input sanitization lives here).
-- `src/lib/game/` — chapters, challenges, flashcards, shop data.
-- `src/components/` — UI components (mascot, chapter map, editor, shop, etc.).
+- `src/lib/game/` — chapters, challenges, shop data, progress store.
+- `src/components/` — game UI (mascot, chapter map, SQL playground, shop).
+- `src/components/ui/` — shadcn-style primitives + landing-page components.
 - `tests/` — Vitest unit tests.
 - `e2e/` — Playwright end-to-end tests (game-flow: solve a challenge, see XP update).
 
@@ -48,16 +48,17 @@ rationale and `README.md` for setup/run instructions.
 
 ## Conventions
 - TypeScript strict mode; no `any` without a comment justifying it.
-- All AI-related code stays inside `src/app/api/ai-hint/` and `src/lib/ai/` —
-  never call the Gemini API from client components.
-- Any new user-facing text that could end up in an AI prompt must be treated
-  as untrusted data (quote it, don't concatenate it into instructions).
+- No emoji-as-icons — use `lucide-react` (per the `ui-ux-pro-max`
+  accessibility/style checklist).
+- Any continuous/looping animation (mascot idle bob/blink, etc.) must be
+  disabled under `prefers-reduced-motion` — see `globals.css`.
+- There is intentionally no server-side code in this app. If a future
+  feature needs one (e.g. reintroducing an AI helper), treat all
+  user-provided text passed to it as untrusted data, never as instructions,
+  and never let a client component call a third-party API directly.
 
 ## Do not
 - Commit `.env`, `.env.local`, or any API key/secret.
-- Call the Gemini API (or any AI provider) directly from client-side code —
-  always go through `/api/ai-hint`.
-- Add a second server route without also adding rate limiting to it.
 - Force-push, discard uncommitted work, or commit without running tests first.
 
 ## Memory

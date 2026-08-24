@@ -1,17 +1,17 @@
 # Project Index — QueryQuest
 
 ## Entry points
-- `src/app/layout.tsx` — root layout (fonts, metadata)
-- `src/app/page.tsx` — home page (chapter map)
+- `src/app/layout.tsx` — root layout (Baloo 2 / Comic Neue fonts, metadata)
+- `src/app/page.tsx` — home page (hero + scroll showcase + chapter map)
 - `src/app/chapter/[chapterId]/page.tsx` — challenge list for a chapter
 - `src/app/chapter/[chapterId]/challenge/[challengeId]/page.tsx` — the SQL playground
 - `src/app/shop/page.tsx` — cosmetic item shop
-- `src/app/api/ai-hint/route.ts` — AI hint serverless route (Gemini + rate limiting)
+
+There is no server-side route in this app — it's fully static/client-side.
 
 ## Key modules
 - `src/lib/sql-engine/sql.worker.ts` — sql.js running inside a Web Worker
 - `src/lib/sql-engine/client.ts` — worker wrapper: query timeout + recreation
-- `src/lib/ai/buildPrompt.ts` — AI hint prompt construction + input quoting
 - `src/lib/game/types.ts` — Chapter/Challenge types
 - `src/lib/game/chapters.ts` — chapter/challenge content (Chapter 1 is real; 2–7 are placeholders)
 - `src/lib/game/checkResult.ts` — answer checker (ordered + unordered modes)
@@ -20,12 +20,22 @@
 - `src/lib/game/shopItems.ts` — cosmetic shop catalog
 
 ## Components
-- `src/components/Mascot.tsx` — Nibble, 5 states
+- `src/components/Mascot.tsx` — Nibble: 5 states, idle blink + bob (respects prefers-reduced-motion)
 - `src/components/Header.tsx` — nav + XP/coins/streak
 - `src/components/ChapterMap.tsx`, `ChallengeList.tsx` — navigation
 - `src/components/SqlPlayground.tsx` — editor, run, results, mascot reaction
-- `src/components/HintPanel.tsx` — calls `/api/ai-hint`
 - `src/components/Shop.tsx` — shop UI
+- `src/components/LandingHero.tsx`, `ScrollShowcase.tsx` — home page hero/scroll sections
+- `src/components/ui/` — shadcn-style primitives (`button.tsx`, `badge.tsx`) and the
+  two integrated animated components (`hero-static-radial-gradient.tsx`,
+  `scroll-reveal-image.tsx`)
+
+## Design system
+- `.claude/skills/ui-ux-pro-max/` — installed skill; run its scripts directly
+  (e.g. `python3 .claude/skills/ui-ux-pro-max/scripts/search.py "<query>"
+  --design-system`) until a Claude Code restart picks it up as a first-class
+  skill. Current palette/fonts (Claymorphism, Baloo 2/Comic Neue) came from
+  this skill — see `.project-memory/DECISIONS.md`.
 
 ## Tests
 - `tests/` — Vitest unit tests, run with `npm run test` (none written yet)
@@ -41,5 +51,4 @@
 - `node_modules/` — dependencies
 - `.next/` — build output
 - `.vercel/` — Vercel deployment metadata
-- `.env*` — secrets, never committed
 - `public/sql-wasm.wasm` — copied from `node_modules/sql.js/dist/` (binary, committed since it's a small fixed asset the app needs at runtime)
