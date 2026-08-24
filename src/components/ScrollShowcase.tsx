@@ -33,7 +33,7 @@ export function ScrollShowcase() {
           fromScale={1.4}
           toScale={1}
           fromRadius="8px"
-          toRadius="var(--radius-chunky)"
+          toRadius="var(--radius)"
         />
       ))}
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Lock, Trophy, PlayCircle } from "lucide-react";
 import { chapters } from "@/lib/game/chapters";
 import { isChapterUnlocked, isChapterComplete } from "@/lib/game/unlock";
 import { useProgressStore } from "@/lib/game/store";
@@ -17,17 +18,27 @@ export function ChapterMap() {
 
         const card = (
           <div
-            className={`chunky-card p-5 flex items-center justify-between gap-4 ${
-              playable ? "" : "opacity-60"
+            className={`clay-card p-5 flex items-center justify-between gap-4 ${
+              playable ? "cursor-pointer" : "opacity-60"
             }`}
           >
             <div>
-              <h2 className="text-lg font-black">{chapter.title}</h2>
-              <p className="text-sm">{chapter.description}</p>
-              {complete && <span className="text-sm font-bold">✅ Complete</span>}
+              <h2 className="font-heading text-lg font-bold">{chapter.title}</h2>
+              <p className="text-sm text-[var(--muted-foreground)]">{chapter.description}</p>
+              {complete && (
+                <span className="inline-flex items-center gap-1 text-sm font-bold text-[var(--success)] mt-1">
+                  <Trophy className="size-4" aria-hidden /> Complete
+                </span>
+              )}
             </div>
-            <div className="text-3xl">
-              {chapter.comingSoon ? "🔒" : unlocked ? (complete ? "🏆" : "▶️") : "🔒"}
+            <div className="shrink-0">
+              {chapter.comingSoon || !unlocked ? (
+                <Lock className="size-7 text-[var(--muted-foreground)]" aria-hidden />
+              ) : complete ? (
+                <Trophy className="size-7 text-[var(--coin)]" aria-hidden />
+              ) : (
+                <PlayCircle className="size-7 text-[var(--primary)]" aria-hidden />
+              )}
             </div>
           </div>
         );

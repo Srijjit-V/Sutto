@@ -439,7 +439,7 @@ export function HeroStaticRadialGradientCTA({
       )}
       data-slot="hero-static-radial-gradient-cta"
     >
-      <Button asChild className={cn("chunky-btn", buttonClassName)} size="lg">
+      <Button asChild className={cn("clay-btn", buttonClassName)} size="lg">
         <a href={href} onClick={onClick} rel={rel} target={target}>
           {label}
         </a>
