@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Chapters 4–7**, completing the full 7-chapter arc: Aggregation &
+  GROUP BY (Trading Co), Subqueries & CTEs (new Corner Library dataset),
+  Window Functions (new Arcade Leaderboard dataset), and a Boss chapter
+  combining everything.
+- **Per-chapter lesson slide**: a short concept explanation + worked
+  example shown before every chapter's challenge list.
 - **Explore/Sandbox mode** (`/explore`): choose from built-in datasets or
   upload a CSV, browse the schema, and run any SQL freely with no
   challenge-checking attached.
@@ -19,6 +25,13 @@ All notable changes to this project will be documented in this file.
   with real challenges, not placeholders.
 - Refactored the snack shop seed data into `src/lib/datasets/`, shared by
   both Chapter 1 and Explore mode.
+
+### Verification
+- Wrote a throwaway Node script running every challenge's real answer-key
+  query against actual sql.js/SQLite and diffed the output against
+  `expectedRows` in `chapters.ts` — not hand-computed values taken on
+  faith. Confirmed all 24 challenges are correct (a few floating-point
+  rounding differences in SUM() results are within the existing tolerance).
 
 ### Not added (on purpose)
 - Excel/.xlsx import — the standard client-side parser (`xlsx`/SheetJS)
