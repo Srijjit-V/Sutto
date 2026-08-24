@@ -1,5 +1,28 @@
 # Technical Decisions — QueryQuest
 
+## Decision: Presentation-slide-style lesson intro, not a hosted video
+**Date:** 2026-08-24
+**Status:** active
+**Decision:** Every chapter now shows a lesson card (concept name, a few
+explanatory bullets, one worked SQL example) before its challenge list. The
+user asked for "a video or explanation... or presentation slide" before
+each chapter — this app has no video hosting/playback infrastructure (and
+adding one, e.g. embedding third-party video, would be a large scope
+increase and a new external dependency for a fully static app), so the
+presentation-slide option — one the user explicitly offered as an
+alternative — was built instead.
+**Reason:** Delivers the actual pedagogical goal (explain the concept
+before the challenges) without a disproportionate infrastructure lift or
+external dependency, and stays consistent with "fully client-side, no
+backend" from earlier decisions.
+**Alternatives considered:** Embedding a third-party video host (rejected —
+no content exists to embed, and it would require picking/trusting an
+external service); recording original narrated video (out of scope for a
+code-generation session).
+**Consequences:** If real instructional video is wanted later, the lesson
+data model (`ChapterLesson`) can be extended with an optional video URL
+without restructuring anything.
+
 ## Decision: Hand-author compact Chinook/Northwind-style datasets, don't embed the real dumps
 **Date:** 2026-08-24
 **Status:** active

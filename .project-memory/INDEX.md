@@ -14,15 +14,17 @@ There is no server-side route in this app — it's fully static/client-side.
 - `src/lib/sql-engine/sql.worker.ts` — sql.js running inside a Web Worker
 - `src/lib/sql-engine/client.ts` — worker wrapper: query timeout + recreation
 - `src/lib/game/types.ts` — Chapter/Challenge types
-- `src/lib/game/chapters.ts` — chapter/challenge content (Chapters 1–3 are
-  real: SELECT basics, filtering/sorting, joins; 4–7 are placeholders)
+- `src/lib/game/chapters.ts` — all 7 chapters, fully real: SELECT basics,
+  filtering/sorting, joins, aggregation/GROUP BY, subqueries/CTEs, window
+  functions, boss (mixed). Each has a `lesson` (concept + example).
 - `src/lib/game/checkResult.ts` — answer checker (ordered + unordered modes)
 - `src/lib/game/unlock.ts` — chapter unlock/complete logic
 - `src/lib/game/store.ts` — Zustand + localStorage progress store
 - `src/lib/game/shopItems.ts` — cosmetic shop catalog
 - `src/lib/datasets/types.ts` — shared `Dataset` type (name, description, seed SQL, table/column list)
-- `src/lib/datasets/snackShop.ts`, `musicStore.ts`, `tradingCo.ts` — built-in datasets
-  (the latter two modeled on Chinook/Northwind — see DECISIONS.md)
+- `src/lib/datasets/snackShop.ts`, `musicStore.ts`, `tradingCo.ts`, `library.ts`, `leaderboard.ts` —
+  the 5 built-in datasets (music store/trading co modeled on Chinook/Northwind — see DECISIONS.md;
+  library/leaderboard are original, built for subqueries and window functions respectively)
 - `src/lib/datasets/index.ts` — `builtInDatasets` registry
 - `src/lib/datasets/csvImport.ts` — parses an uploaded CSV into a Dataset (type inference, safe SQL identifiers)
 
@@ -31,6 +33,7 @@ There is no server-side route in this app — it's fully static/client-side.
 - `src/components/Header.tsx` — nav + XP/coins/streak
 - `src/components/ChapterMap.tsx`, `ChallengeList.tsx` — navigation
 - `src/components/SqlPlayground.tsx` — editor, run, results, mascot reaction (challenge mode)
+- `src/components/LessonCard.tsx` — per-chapter concept/example slide shown before the challenge list
 - `src/components/ExplorePage.tsx`, `DatasetPicker.tsx`, `SqlExplorer.tsx`,
   `SchemaViewer.tsx` — Explore/Sandbox mode (free-form, no checking)
 - `src/components/Shop.tsx` — shop UI

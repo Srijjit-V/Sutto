@@ -14,6 +14,18 @@ export interface Challenge {
   hintFallback: string;
 }
 
+export interface ChapterLesson {
+  /** The SQL concept this chapter teaches, e.g. "GROUP BY & aggregates". */
+  concept: string;
+  /** Short bullet points explaining the concept — kept brief, not a textbook. */
+  points: string[];
+  /** One worked example shown before the challenges start. */
+  example: {
+    sql: string;
+    note: string;
+  };
+}
+
 export interface Chapter {
   id: string;
   order: number;
@@ -23,4 +35,6 @@ export interface Chapter {
   seedSql: string;
   challenges: Challenge[];
   comingSoon?: boolean;
+  /** Shown as a presentation-slide-style intro before the challenge list. */
+  lesson?: ChapterLesson;
 }
