@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Explore/Sandbox mode** (`/explore`): choose from built-in datasets or
+  upload a CSV, browse the schema, and run any SQL freely with no
+  challenge-checking attached.
+- Two new datasets modeled on the classic, free Chinook (music store) and
+  Northwind (trading company) teaching databases — hand-authored compact
+  versions with the same table shapes/relationships, not copies of the
+  real data dumps (kept bundle size sane, avoided reproducing large
+  external files).
+- CSV import: client-side parsing (`papaparse`) into a dynamically-typed
+  SQL table, with sanitized identifiers and INTEGER/REAL/TEXT inference.
+- Chapter 2 (Filtering & Sorting) and Chapter 3 (Joins) — real content
+  with real challenges, not placeholders.
+- Refactored the snack shop seed data into `src/lib/datasets/`, shared by
+  both Chapter 1 and Explore mode.
+
+### Not added (on purpose)
+- Excel/.xlsx import — the standard client-side parser (`xlsx`/SheetJS)
+  has two unpatched high-severity npm advisories (prototype pollution,
+  ReDoS) with no fixed version on npm. Flagged directly in the Explore
+  upload UI; CSV export from Excel/Sheets covers the common case.
+
 - shadcn-style project structure: `components.json`, `src/lib/utils.ts`
   (`cn()`), and shadcn semantic color tokens (primary/secondary/destructive/
   accent/ring/etc.) mapped onto the existing Fall-Guys-2D palette.

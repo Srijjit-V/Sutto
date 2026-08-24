@@ -21,6 +21,15 @@ Fully client-side: no backend, no accounts, no API keys. See
   progress is local to the browser only.
 - **Game content**: `src/lib/game/` — chapter definitions, challenges,
   expected result sets, shop items.
+- **Datasets**: `src/lib/datasets/` — reusable named datasets (schema +
+  seed data), used by both chapters and the Explore/Sandbox mode
+  (`/explore`). Includes two datasets modeled on the classic Chinook
+  (music store) and Northwind (trading company) teaching databases —
+  hand-authored compact versions, not copies of the originals' actual data.
+  Also includes `csvImport.ts`, which turns an uploaded CSV into a dataset
+  client-side (infers column types, builds CREATE TABLE/INSERT SQL).
+  Excel/.xlsx import was deliberately left out — the standard library for
+  it (`xlsx`/SheetJS) has unpatched high-severity advisories on npm.
 - **Design system**: Claymorphism, generated via the `ui-ux-pro-max` skill
   (installed at `.claude/skills/ui-ux-pro-max/` — restart Claude Code to
   pick it up as a first-class skill; until then its scripts can be run
@@ -33,7 +42,10 @@ Fully client-side: no backend, no accounts, no API keys. See
 ## Important paths
 - `src/lib/sql-engine/` — sql.js Web Worker wrapper, query execution + safety caps.
 - `src/lib/game/` — chapters, challenges, shop data, progress store.
-- `src/components/` — game UI (mascot, chapter map, SQL playground, shop).
+- `src/lib/datasets/` — named datasets (snack shop, music store, trading
+  co) shared between chapters and Explore mode, plus CSV import.
+- `src/components/` — game UI (mascot, chapter map, SQL playground, shop,
+  Explore/dataset picker/schema viewer).
 - `src/components/ui/` — shadcn-style primitives + landing-page components.
 - `tests/` — Vitest unit tests.
 - `e2e/` — Playwright end-to-end tests (game-flow: solve a challenge, see XP update).

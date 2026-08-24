@@ -1,5 +1,53 @@
 # Technical Decisions — QueryQuest
 
+## Decision: Hand-author compact Chinook/Northwind-style datasets, don't embed the real dumps
+**Date:** 2026-08-24
+**Status:** active
+**Decision:** Added an Explore/Sandbox mode (`/explore`) with real,
+well-known multi-table sample datasets — one modeled on Chinook (digital
+music store) and one on Northwind (trading company), the two standard
+free/public-domain SQL teaching databases. Rather than fetching and
+embedding the actual published data dumps (which run to hundreds of KB of
+INSERT statements per dataset), each is a small hand-authored dataset that
+follows the same table names, columns, and relationships, with fresh
+sample rows.
+**Reason:** Keeps bundle size sane (full Chinook is ~15k rows), sidesteps
+any ambiguity about reproducing external file content wholesale, and is
+still a faithful, genuinely useful stand-in for learning joins/aggregation
+against real-shaped relational data — verified by researching that these
+are in fact the two standard free sample databases before building them.
+**Alternatives considered:** Fetching real Chinook_Sqlite.sqlite/Northwind
+SQLite dumps from GitHub and embedding them directly (rejected — much
+larger bundle, and reproducing a large external file verbatim is worth
+avoiding even when the license is permissive).
+**Consequences:** Datasets are clearly labeled "-style" in their display
+names so it's honest about being inspired-by rather than the genuine
+article; a future pass could swap in the real dumps if bundle size stops
+mattering (e.g. lazy-loaded on dataset selection).
+
+## Decision: CSV import yes, Excel/.xlsx import no (for now)
+**Date:** 2026-08-24
+**Status:** active
+**Decision:** Explore mode lets users upload their own CSV file, parsed
+client-side (via `papaparse`) into a dynamically-typed SQL table. Excel
+(.xlsx) import was not implemented.
+**Reason:** The standard library for parsing .xlsx client-side (`xlsx`,
+i.e. SheetJS) has two unpatched high-severity npm advisories (prototype
+pollution, ReDoS) with no fixed version published to npm. Given this
+project has otherwise been careful about dependency security throughout
+(see the AI-hint decisions above), installing a known-vulnerable package
+silently wasn't the right call.
+**Alternatives considered:** Installing `xlsx` anyway on the reasoning that
+it only parses a locally-selected file, not untrusted network input
+(considered, but rejected — a malicious .xlsx a user is tricked into
+opening is exactly the scenario these advisories describe, and the
+CSV-only path already covers "bring your own spreadsheet" for the common
+case of exporting from Excel/Sheets/Numbers).
+**Consequences:** Users with .xlsx files need to export to CSV first (one
+extra step, called out directly in the Explore UI's upload copy). Revisit
+if SheetJS ships a patched release to npm, or if a vetted alternative
+parser appears.
+
 ## Decision: Deploy entirely on Vercel, not GitHub Pages
 **Date:** 2026-08-24
 **Status:** superseded by "Remove the AI hint helper" below

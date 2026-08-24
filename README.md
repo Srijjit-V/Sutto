@@ -2,9 +2,11 @@
 
 A gamified way to learn SQL: work through story-driven, chapter-gated
 challenges that run real SQL (via an in-browser SQLite engine) and earn
-coins for a cosmetic item shop. Claymorphism visual style — chunky, soft,
-toy-like, with a mascot ("Nibble") that blinks and bobs gently while idle
-and reacts to your answers. Fully client-side, no backend, no accounts.
+coins for a cosmetic item shop. There's also an **Explore** mode — pick a
+sample dataset (or upload your own CSV) and run any SQL you want, no
+challenges attached. Claymorphism visual style — chunky, soft, toy-like,
+with a mascot ("Nibble") that blinks and bobs gently while idle and reacts
+to your answers. Fully client-side, no backend, no accounts.
 
 ## Setup
 
@@ -44,9 +46,12 @@ configure.
 - `src/lib/sql-engine/` — sql.js (SQLite/WASM) wrapper, run inside a Web Worker
   with a query timeout/complexity cap.
 - `src/lib/game/` — chapter/challenge/shop content and game logic.
+- `src/lib/datasets/` — named sample datasets (Snack Shop, Music Store,
+  Trading Co) shared between chapters and Explore mode, plus CSV import.
 - `src/components/` — UI components (mascot, chapter map, SQL playground,
-  shop) and `src/components/ui/` (shadcn-style primitives + the animated
-  hero/scroll-reveal components on the landing page).
+  shop, Explore/dataset picker) and `src/components/ui/` (shadcn-style
+  primitives + the animated hero/scroll-reveal components on the landing
+  page).
 - `tests/` — unit tests. `e2e/` — Playwright end-to-end tests.
 - `.project-memory/` — durable project memory (see `INDEX.md`, `STATE.md`,
   `DECISIONS.md`).
