@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header";
 import { ChapterMap } from "@/components/ChapterMap";
 import { LandingHero } from "@/components/LandingHero";
-import { ScrollShowcase } from "@/components/ScrollShowcase";
+import { HowItWorks } from "@/components/HowItWorks";
 
 export default function Home() {
   return (
@@ -9,7 +9,7 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <LandingHero />
-        <ScrollShowcase />
+        <HowItWorks />
         <ChapterMap />
       </main>
     </div>

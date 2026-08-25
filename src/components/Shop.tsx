@@ -16,10 +16,14 @@ export function Shop() {
         Cosmetic-only — spend coins earned from challenges. Nothing here affects gameplay.
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {shopItems.map((item) => {
+        {shopItems.map((item, i) => {
           const owned = ownedItemIds.includes(item.id);
           return (
-            <div key={item.id} className="clay-card p-4 flex flex-col gap-2">
+            <div
+              key={item.id}
+              className="clay-card rise-in p-4 flex flex-col gap-2"
+              style={{ animationDelay: `${i * 60}ms` }}
+            >
               <div
                 className="w-full h-10 rounded-[var(--radius-sm)] border-2 border-[var(--border)]"
                 style={{ background: item.swatch }}

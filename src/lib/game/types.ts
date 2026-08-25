@@ -19,6 +19,9 @@ export interface ChapterLesson {
   concept: string;
   /** Short bullet points explaining the concept — kept brief, not a textbook. */
   points: string[];
+  /** Formal placeholder-notation syntax, W3Schools-style, e.g.
+   * "SELECT column1, column2 FROM table_name WHERE condition;" */
+  syntax: string;
   /** One worked example shown before the challenges start. */
   example: {
     sql: string;

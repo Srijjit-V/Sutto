@@ -4,6 +4,43 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed (visual/correctness overhaul)
+- **Cascade-layers bug**: custom component classes (`.clay-card`, `.clay-btn`)
+  were plain/unlayered CSS, which under Tailwind v4's cascade-layers model
+  always outranks Tailwind *utility* classes regardless of source order or
+  specificity. This silently broke every colored badge and icon-badge in
+  the app (XP/coins/streak pills, the "How it works" step icons) — they
+  rendered with the wrong background, in one case making a white icon
+  invisible on a white background. Fixed by wrapping the custom classes in
+  `@layer components`.
+- Header overflowed and clipped content (XP/coins/streak/Explore/Shop) on
+  narrower viewports — now wraps responsively, hides secondary labels
+  below `sm`, and uses animated `NumberFlow` counters.
+- Lesson syntax-box text could overflow its container on narrow screens
+  (an unbroken token like `COUNT(*)|SUM(...)|AVG(...)`) — fixed with
+  `break-words`.
+
+### Changed (design pass)
+- Applied the **ui-ux-pro-max** design system output more thoroughly and
+  added the **emil-design-eng** craft skill (`npx skills add
+  emilkowalski/skill`): custom cubic-bezier easing tokens (the default CSS
+  `ease-out` is too weak), press feedback via `scale(0.97)` (never from/to
+  `scale(0)`), origin-aware hover/lift on interactive cards, staggered
+  entrance animation for card lists — all skipped under
+  `prefers-reduced-motion`.
+- Added `@number-flow/react` for animated XP/coin/streak counters (per the
+  `pick-ui-library` skill's explicit recommendation for this exact use case).
+- **Removed the stock Unsplash image scroll section** from the landing
+  page; replaced with `HowItWorks`, a 3-step section built entirely from
+  the app's own design system (icons + copy, no external images).
+- **Lesson cards now follow the W3Schools SQL-tutorial structure**
+  (researched directly): concept explanation → formal placeholder-notation
+  **syntax box** → worked **example** — added a `syntax` field to every
+  chapter's lesson, shown in a distinct box from the worked example.
+- Added a subtle dot-grid background texture (no image asset) for visual
+  distinction from a flat default look.
+
+
 ### Added
 - **Chapters 4–7**, completing the full 7-chapter arc: Aggregation &
   GROUP BY (Trading Co), Subqueries & CTEs (new Corner Library dataset),

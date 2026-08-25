@@ -50,6 +50,29 @@ real SQLite execution.
   updates and correct result tables. Chapter map shows all 7 chapters with
   correct lock states.
 
+## Last completed (design/visual overhaul)
+- Installed the `emil-design-eng` craft skill (`npx skills add
+  emilkowalski/skill`) and applied it: custom cubic-bezier easing tokens,
+  scale-based press feedback, origin-aware hover, staggered card entrance
+  — all disabled under prefers-reduced-motion.
+- Researched W3Schools' actual SQL-tutorial structure and restructured
+  every chapter's lesson to match it: concept -> formal syntax box ->
+  worked example (previously just concept + example).
+- Removed the stock Unsplash scroll-image section from the landing page;
+  replaced with an on-theme "How it works" 3-step section (icons + copy,
+  no external images).
+- Found and fixed a real, app-wide bug: `.clay-card`/`.clay-btn` were
+  unlayered CSS, which under Tailwind v4's cascade-layers rules always
+  outranks Tailwind utility classes regardless of source order — this was
+  silently breaking every colored badge/icon-badge in the app (some
+  invisibly, e.g. a white icon on a white background). Fixed by wrapping
+  the custom classes in `@layer components`.
+- Fixed a header overflow bug on narrow viewports (now wraps responsively)
+  and added `@number-flow/react` animated counters for XP/coins/streak.
+- Verified all of the above live in a real browser after each fix — not
+  just via lint/build — including a full incorrect-then-correct challenge
+  run-through after the CSS fix landed.
+
 ## Active work
 None — this pass is complete.
 
