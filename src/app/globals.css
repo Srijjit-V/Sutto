@@ -5,6 +5,10 @@
   search for "kids educational game learning app playful" (see
   .project-memory/DECISIONS.md). Soft 3D, chunky, toy-like, thick borders,
   double (inner+outer) shadows, rounded 16-24px corners.
+
+  Motion follows the emil-design-eng craft skill: custom (non-default) easing
+  curves, transform-only transitions under 300ms, press feedback via scale
+  (never from/to scale(0)), origin-aware hover for anything pressable.
 */
 :root {
   --background: #eef2ff;
@@ -32,6 +36,10 @@
 
   --radius: 20px;
   --radius-sm: 14px;
+
+  /* Custom easing — the built-in CSS ease-out is too weak to feel intentional. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 @theme inline {
@@ -60,7 +68,11 @@
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  /* Subtle dot-grid texture instead of a flat fill — cheap, on-theme,
+     avoids the "generic default" look without adding any image asset. */
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 22px 22px;
   color: var(--foreground);
   font-family: var(--font-body), Arial, Helvetica, sans-serif;
 }
@@ -69,35 +81,68 @@ h1, h2, h3, .font-heading {
   font-family: var(--font-heading), Arial, Helvetica, sans-serif;
 }
 
-/* Claymorphism card: soft outer shadow + thick border, generously rounded. */
-.clay-card {
-  background: var(--card);
-  color: var(--card-foreground);
-  border: 3px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow:
-    0 8px 0 -2px rgba(79, 70, 229, 0.08),
-    0 10px 20px rgba(30, 27, 75, 0.12);
-}
+/*
+  IMPORTANT: our custom component classes (.clay-card, .clay-btn, etc.) must
+  live inside @layer components. Tailwind v4's utilities are emitted into
+  named CSS cascade layers; per the Cascade Layers spec, any *unlayered*
+  author CSS automatically outranks *all* layered CSS regardless of
+  selector specificity or source order. Without this @layer wrapper, a
+  plain ".clay-card { background: ... }" rule would silently beat a
+  Tailwind utility like `bg-[var(--primary)]` applied on the same element
+  — which is exactly the bug this fixes (colored badges/icon-badges were
+  rendering with the wrong background because of this).
+*/
+@layer components {
+  /* Claymorphism card: soft outer shadow + thick border, generously rounded. */
+  .clay-card {
+    background: var(--card);
+    color: var(--card-foreground);
+    border: 3px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow:
+      0 8px 0 -2px rgba(79, 70, 229, 0.08),
+      0 10px 20px rgba(30, 27, 75, 0.12);
+  }
 
-/* Claymorphism button: soft press feedback instead of a hard offset shadow. */
-.clay-btn {
-  border: 3px solid var(--border);
-  border-radius: 999px;
-  box-shadow:
-    inset 0 -3px 0 rgba(0, 0, 0, 0.12),
-    0 6px 14px rgba(30, 27, 75, 0.18);
-  transition: transform 200ms ease-out, box-shadow 200ms ease-out;
-  cursor: pointer;
-}
+  /* Interactive variant: cards that are themselves a link/button (chapter
+     cards, dataset cards). Lifts + a hair of scale on hover, using the same
+     spatial logic as clay-btn — never scale(0), always transform-only. */
+  .clay-card-interactive {
+    transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+  }
 
-.clay-btn:hover {
-  transform: translateY(-1px);
-}
+  .clay-card-interactive:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow:
+      0 10px 0 -2px rgba(79, 70, 229, 0.1),
+      0 16px 28px rgba(30, 27, 75, 0.16);
+  }
 
-.clay-btn:active {
-  transform: translateY(1px);
-  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 2px 6px rgba(30, 27, 75, 0.18);
+  .clay-card-interactive:active {
+    transform: translateY(0) scale(0.99);
+    transition-duration: 100ms;
+  }
+
+  /* Claymorphism button: soft press feedback instead of a hard offset shadow. */
+  .clay-btn {
+    border: 3px solid var(--border);
+    border-radius: 999px;
+    box-shadow:
+      inset 0 -3px 0 rgba(0, 0, 0, 0.12),
+      0 6px 14px rgba(30, 27, 75, 0.18);
+    transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+    cursor: pointer;
+  }
+
+  .clay-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .clay-btn:active {
+    transform: translateY(0) scale(0.97);
+    transition-duration: 90ms;
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 2px 6px rgba(30, 27, 75, 0.18);
+  }
 }
 
 /* Mascot animation: a brief pop when its state changes, plus a continuous
@@ -119,17 +164,33 @@ h1, h2, h3, .font-heading {
 }
 
 .mascot-idle-motion {
-  animation: mascot-bob 2.6s ease-in-out infinite;
+  animation: mascot-bob 2.6s var(--ease-in-out) infinite;
 }
 
 .mascot-eyelids {
-  animation: mascot-blink 4.5s ease-in-out infinite;
+  animation: mascot-blink 4.5s var(--ease-in-out) infinite;
   transform-origin: center;
+}
+
+/* Staggered entrance for lists of cards (chapter map, dataset picker,
+   "how it works" steps) — a subtle, one-time reveal, not a loop. */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.rise-in {
+  animation: rise-in 420ms var(--ease-out) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .mascot-idle-motion,
-  .mascot-eyelids {
+  .mascot-eyelids,
+  .rise-in {
     animation: none !important;
+  }
+  .clay-card-interactive,
+  .clay-btn {
+    transition: none !important;
   }
 }

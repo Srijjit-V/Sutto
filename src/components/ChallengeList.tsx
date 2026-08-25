@@ -18,7 +18,8 @@ export function ChallengeList({ chapterId }: { chapterId: string }) {
           <Link
             key={challenge.id}
             href={`/chapter/${chapter.id}/challenge/${challenge.id}`}
-            className="clay-card p-4 flex items-center justify-between cursor-pointer"
+            className="clay-card clay-card-interactive rise-in p-4 flex items-center justify-between cursor-pointer"
+            style={{ animationDelay: `${i * 60}ms` }}
           >
             <span className="font-bold">
               {i + 1}. {challenge.title}

@@ -43,11 +43,12 @@ export function DatasetPicker({ onSelect }: { onSelect: (dataset: Dataset) => vo
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        {builtInDatasets.map((dataset) => (
+        {builtInDatasets.map((dataset, i) => (
           <button
             key={dataset.id}
             onClick={() => onSelect(dataset)}
-            className="clay-card p-4 text-left flex flex-col gap-2 cursor-pointer"
+            className="clay-card clay-card-interactive rise-in p-4 text-left flex flex-col gap-2 cursor-pointer"
+            style={{ animationDelay: `${i * 60}ms` }}
           >
             <Database className="size-6 text-[var(--primary)]" aria-hidden />
             <h2 className="font-bold">{dataset.name}</h2>

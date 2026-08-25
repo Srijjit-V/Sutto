@@ -11,16 +11,17 @@ export function ChapterMap() {
 
   return (
     <div className="flex flex-col gap-4 max-w-2xl mx-auto p-6">
-      {chapters.map((chapter) => {
+      {chapters.map((chapter, i) => {
         const unlocked = isChapterUnlocked(chapter, completedChallengeIds);
         const complete = isChapterComplete(chapter, completedChallengeIds);
         const playable = unlocked && !chapter.comingSoon;
 
         const card = (
           <div
-            className={`clay-card p-5 flex items-center justify-between gap-4 ${
-              playable ? "cursor-pointer" : "opacity-60"
+            className={`clay-card rise-in p-5 flex items-center justify-between gap-4 ${
+              playable ? "clay-card-interactive cursor-pointer" : "opacity-60"
             }`}
+            style={{ animationDelay: `${i * 60}ms` }}
           >
             <div>
               <h2 className="font-heading text-lg font-bold">{chapter.title}</h2>

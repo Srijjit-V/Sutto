@@ -20,6 +20,10 @@ const chapter1: Chapter = {
       "ORDER BY column sorts results; add DESC for highest-to-lowest.",
       "DISTINCT removes duplicate rows from the result.",
     ],
+    syntax: `SELECT column1, column2, ...
+FROM table_name
+WHERE condition
+ORDER BY column1 [ASC|DESC];`,
     example: {
       sql: "SELECT name, price FROM snacks WHERE price < 3 ORDER BY price DESC;",
       note: "Shows the name and price of every snack under $3, priciest of those first.",
@@ -110,6 +114,11 @@ const chapter2: Chapter = {
       "BETWEEN low AND high includes both endpoints.",
       "LIKE '%text%' matches text anywhere in a column; % is a wildcard.",
     ],
+    syntax: `SELECT column1, column2, ...
+FROM table_name
+WHERE condition1 AND|OR condition2
+  AND columnN BETWEEN value1 AND value2
+  AND columnN LIKE pattern;`,
     example: {
       sql: "SELECT name FROM snacks WHERE category = 'salty' AND in_stock = 1;",
       note: "Combines two conditions with AND — both must be true for a row to show up.",
@@ -199,6 +208,9 @@ const chapter3: Chapter = {
       "JOIN other_table ON this.foreign_key = other_table.id links them together.",
       "You can chain multiple JOINs to connect three or more tables.",
     ],
+    syntax: `SELECT columns
+FROM table1
+JOIN table2 ON table1.column = table2.column;`,
     example: {
       sql: "SELECT albums.title, artists.name\nFROM albums\nJOIN artists ON albums.artist_id = artists.id;",
       note: "Every album, paired with the artist who made it.",
@@ -310,6 +322,10 @@ const chapter4: Chapter = {
       "COUNT(*), SUM(col), and AVG(col) compute one number per group.",
       "HAVING filters groups after aggregation — WHERE can't do that, it filters rows before grouping.",
     ],
+    syntax: `SELECT column1, COUNT(*)|SUM(column2)|AVG(column2)
+FROM table_name
+GROUP BY column1
+HAVING condition;`,
     example: {
       sql: "SELECT category_id, COUNT(*) AS product_count\nFROM products\nGROUP BY category_id;",
       note: "One row per category, with how many products are in it.",
@@ -412,6 +428,13 @@ const chapter5: Chapter = {
       "A CTE (WITH name AS (...)) gives a subquery a name you can reuse, making complex queries readable.",
       "Subqueries can also appear in the SELECT list, computed once per outer row.",
     ],
+    syntax: `-- subquery
+SELECT column1 FROM table1
+WHERE column2 IN (SELECT column2 FROM table2);
+
+-- CTE
+WITH cte_name AS (SELECT ...)
+SELECT * FROM cte_name;`,
     example: {
       sql: "SELECT title\nFROM books\nWHERE id NOT IN (SELECT book_id FROM loans);",
       note: "Books that have never been loaned out — the subquery finds every book_id that HAS been loaned, then NOT IN excludes them.",
@@ -500,6 +523,9 @@ const chapter6: Chapter = {
       "PARTITION BY col restarts the window per group — like a GROUP BY that keeps every row.",
       "SUM(col) OVER (ORDER BY col) gives a running total.",
     ],
+    syntax: `SELECT column1,
+  RANK() OVER (PARTITION BY column2 ORDER BY column3 DESC) AS rnk
+FROM table_name;`,
     example: {
       sql: "SELECT name, score,\n  RANK() OVER (ORDER BY score DESC) AS rank\nFROM scores JOIN players ON players.id = scores.player_id\nWHERE game = 'Comet Dash';",
       note: "Every Comet Dash score, ranked from highest to lowest.",
@@ -604,6 +630,10 @@ const chapter7: Chapter = {
       "Boss chapter — no new syntax, just combining JOIN, GROUP BY, subqueries, and window functions.",
       "A good approach: build the query in a CTE first, then query the CTE like a regular table.",
     ],
+    syntax: `WITH cte_name AS (
+  SELECT ... FROM ... JOIN ... GROUP BY ...
+)
+SELECT ... FROM cte_name WHERE ...;`,
     example: {
       sql: "WITH totals AS (\n  SELECT customer_id, SUM(unit_price * quantity) AS total\n  FROM order_items\n  JOIN orders ON order_items.order_id = orders.id\n  GROUP BY customer_id\n)\nSELECT * FROM totals;",
       note: "Building a reusable per-customer total as a CTE — the next challenges build on this idea.",
