@@ -53,7 +53,3 @@ configure.
   primitives + the animated hero/scroll-reveal components on the landing
   page).
 - `tests/` — unit tests. `e2e/` — Playwright end-to-end tests.
-- `.project-memory/` — durable project memory (see `INDEX.md`, `STATE.md`,
-  `DECISIONS.md`).
-
-See `CLAUDE.md` for architecture details and working conventions.

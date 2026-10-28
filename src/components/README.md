@@ -2,8 +2,8 @@
 
 Mascot ("Nibble" — idle blink + bob, respects prefers-reduced-motion),
 header/nav, chapter map, challenge list, the SQL playground (editor + run
-+ results), and the shop. Claymorphism visual style (see
-`.project-memory/DECISIONS.md`) — chosen via the `ui-ux-pro-max` skill.
++ results), and the shop. Claymorphism visual style, chosen via the
+`ui-ux-pro-max` design-system search.
 
 `LandingHero.tsx` / `ScrollShowcase.tsx` are the home-page-only sections
 built on the integrated animated components in `ui/`.

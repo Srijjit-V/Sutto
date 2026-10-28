@@ -90,8 +90,7 @@ All notable changes to this project will be documented in this file.
   section of the app — everything past the hero stays low-animation per
   the existing design decision.
 - `next.config.ts`: allow `images.unsplash.com` for `next/image`.
-- Installed the `ui-ux-pro-max` Claude Code skill and used its
-  design-system search for a "kids educational game" product type. Applied
+- Used the `ui-ux-pro-max` design-system search for a "kids educational game" product type. Applied
   its recommendation across the app: **Claymorphism** style (soft 3D,
   thick borders, double shadows), **Baloo 2 / Comic Neue** fonts, and a new
   indigo/orange color palette (replacing the earlier hand-picked one).
@@ -120,7 +119,6 @@ All notable changes to this project will be documented in this file.
   `@upstash/redis`, `@upstash/ratelimit`, `@google/generative-ai`.
 - Test tooling installed: Vitest + jsdom, Playwright.
 - Project folder structure for the SQL engine, AI hint proxy, and game logic.
-- Architecture decisions captured in `.project-memory/DECISIONS.md`.
 - **Nibble**, the mascot (idle/happy/confused/celebrating/thinking states as
   simple SVG poses, low-animation per the Fall-Guys-2D design decision).
 - Design tokens (chunky-card look, bright palette) in `globals.css`.

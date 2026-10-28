@@ -6,8 +6,7 @@ import type { ChapterLesson } from "@/lib/game/types";
  * Structure borrows the proven W3Schools SQL-tutorial pattern (concept
  * explanation -> formal syntax box -> worked example) but wraps it in
  * QueryQuest's own story/character framing rather than being sterile.
- * Not a hosted video (no video infra in this fully client-side app) — see
- * .project-memory/DECISIONS.md for that tradeoff.
+ * Not a hosted video: this app is fully client-side with no video hosting.
  */
 export function LessonCard({ lesson }: { lesson: ChapterLesson }) {
   return (
