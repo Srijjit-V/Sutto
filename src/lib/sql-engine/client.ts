@@ -18,10 +18,12 @@ const MAX_QUERY_LENGTH = 2000;
 export class SqlEngine {
   private worker: Worker | null = null;
   private seedSql: string;
+  private readOnly: boolean;
   private ready: Promise<void> | null = null;
 
-  constructor(seedSql: string) {
+  constructor(seedSql: string, options: { readOnly?: boolean } = {}) {
     this.seedSql = seedSql;
+    this.readOnly = options.readOnly ?? false;
   }
 
   private spawnWorker(): Promise<void> {
@@ -40,7 +42,7 @@ export class SqlEngine {
       };
       worker.addEventListener("message", onMessage);
       worker.addEventListener("error", (e) => reject(e.error ?? new Error("Worker failed to start")));
-      worker.postMessage({ type: "init", seedSql: this.seedSql });
+      worker.postMessage({ type: "init", seedSql: this.seedSql, readOnly: this.readOnly });
     });
   }
 

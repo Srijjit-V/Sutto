@@ -45,3 +45,15 @@ test("a runaway query is stopped instead of freezing the tab", async ({ page }) 
   await page.getByRole("button", { name: "Run query" }).click();
   await expect(page.getByText(/took too long/)).toBeVisible({ timeout: 8000 });
 });
+
+test("challenge mode is read-only: DROP TABLE is refused and the challenge still works", async ({ page }) => {
+  await page.goto("/chapter/ch1-select-basics/challenge/ch1-q3");
+  const box = page.locator("textarea");
+  const run = page.getByRole("button", { name: "Run query" });
+  await box.fill("DROP TABLE snacks");
+  await run.click();
+  await expect(page.getByText(/readonly|read-only|read only/i)).toBeVisible();
+  await box.fill("SELECT name, price FROM snacks ORDER BY price DESC");
+  await run.click();
+  await expect(page.getByText("Nice work! That's correct.")).toBeVisible();
+});

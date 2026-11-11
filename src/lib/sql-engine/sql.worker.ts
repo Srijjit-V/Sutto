@@ -6,7 +6,7 @@
  * worker from the main thread, instead of freezing the whole tab.
  *
  * Protocol (all messages are structured-clonable objects):
- *  -> { type: "init", seedSql: string }
+ *  -> { type: "init", seedSql: string, readOnly?: boolean }
  *  <- { type: "ready" } | { type: "error", message: string }
  *  -> { type: "run", sql: string }
  *  <- { type: "result", columns: string[], rows: unknown[][] }
@@ -18,7 +18,7 @@ import { prepareStatement } from "./guard";
 
 let db: Database | null = null;
 
-type InMessage = { type: "init"; seedSql: string } | { type: "run"; sql: string };
+type InMessage = { type: "init"; seedSql: string; readOnly?: boolean } | { type: "run"; sql: string };
 
 type OutMessage =
   | { type: "ready" }
@@ -41,6 +41,9 @@ self.onmessage = async (event: MessageEvent<InMessage>) => {
       });
       db = new SQL.Database();
       db.run(msg.seedSql);
+      // Challenge mode: refuse writes (DROP, DELETE, INSERT ... RETURNING) after seeding,
+      // so a learner cannot break the sample data or fake a result.
+      if (msg.readOnly) db.run("PRAGMA query_only = ON");
       post({ type: "ready" });
       return;
     }
