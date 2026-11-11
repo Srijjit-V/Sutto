@@ -3,6 +3,7 @@ import type { Dataset, DatasetColumn } from "./types";
 
 const MAX_ROWS = 5000; // keep client-side parsing/inserts snappy
 const MAX_COLUMNS = 40;
+const MAX_CHARS = 5_000_000; // checked before parsing so a huge file cannot freeze the tab
 
 export class CsvImportError extends Error {}
 
@@ -26,6 +27,11 @@ function inferType(values: string[]): string {
   return "TEXT";
 }
 
+/** Quote an identifier so SQL keywords (order, group, select...) work as names. */
+function q(name: string): string {
+  return `"${name.replace(/"/g, '""')}"`;
+}
+
 function sqlQuote(value: string): string {
   return `'${value.replace(/'/g, "''")}'`;
 }
@@ -37,6 +43,9 @@ function sqlQuote(value: string): string {
  * from every row (capped at MAX_ROWS to keep things responsive).
  */
 export function parseCsvToDataset(csvText: string, fileName: string): Dataset {
+  if (csvText.length > MAX_CHARS) {
+    throw new CsvImportError("That file is too large (max about 5 MB). Try a smaller sample of it.");
+  }
   const parsed = Papa.parse<string[]>(csvText.trim(), { skipEmptyLines: true });
   if (parsed.errors.length > 0 && parsed.data.length === 0) {
     throw new CsvImportError(`Couldn't parse this CSV: ${parsed.errors[0].message}`);
@@ -69,8 +78,8 @@ export function parseCsvToDataset(csvText: string, fileName: string): Dataset {
 
   const columns: DatasetColumn[] = uniqueColumnNames.map((name, i) => ({ name, type: columnTypes[i] }));
 
-  const createTable = `CREATE TABLE ${tableName} (\n  ${uniqueColumnNames
-    .map((name, i) => `${name} ${columnTypes[i]}`)
+  const createTable = `CREATE TABLE ${q(tableName)} (\n  ${uniqueColumnNames
+    .map((name, i) => `${q(name)} ${columnTypes[i]}`)
     .join(",\n  ")}\n);`;
 
   const insertStatements = dataRows
@@ -81,7 +90,7 @@ export function parseCsvToDataset(csvText: string, fileName: string): Dataset {
         if (raw === "") return "NULL";
         return columnTypes[i] === "TEXT" ? sqlQuote(raw) : raw;
       });
-      return `INSERT INTO ${tableName} (${uniqueColumnNames.join(", ")}) VALUES (${values.join(", ")});`;
+      return `INSERT INTO ${q(tableName)} (${uniqueColumnNames.map(q).join(", ")}) VALUES (${values.join(", ")});`;
     });
 
   return {

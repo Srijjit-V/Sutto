@@ -14,6 +14,7 @@
  */
 
 import initSqlJs, { type Database } from "sql.js";
+import { prepareStatement } from "./guard";
 
 let db: Database | null = null;
 
@@ -49,19 +50,13 @@ self.onmessage = async (event: MessageEvent<InMessage>) => {
         post({ type: "error", message: "Database not initialized yet." });
         return;
       }
-      // Basic complexity guard: reject multi-statement queries (anything
-      // after the first non-trailing semicolon) so one message can't chain
-      // an unbounded number of statements.
-      const trimmed = msg.sql.trim().replace(/;\s*$/, "");
-      if (trimmed.includes(";")) {
-        post({
-          type: "error",
-          message: "Only a single SQL statement is allowed per run.",
-        });
+      const prepared = prepareStatement(msg.sql);
+      if (!prepared.ok) {
+        post({ type: "error", message: prepared.message });
         return;
       }
 
-      const results = db.exec(trimmed);
+      const results = db.exec(prepared.sql);
       if (results.length === 0) {
         post({ type: "result", columns: [], rows: [] });
         return;
