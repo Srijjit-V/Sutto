@@ -50,7 +50,7 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
-Needs Node 20 or newer. No environment variables.
+Tested on Node 24. No environment variables.
 
 ```bash
 npm test                   # unit tests (Vitest)

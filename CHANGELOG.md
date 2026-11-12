@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Challenge ch2-q4 could not be passed (expected rows listed "NULL Nougat", which has no "e").
+- Seven challenge starters already passed unmodified; they now stop where the learner must finish.
+- Unordered answer checks rejected float rounding noise that ordered checks accepted.
+- A semicolon inside a string literal was rejected as a second statement.
+- CSV import failed on SQL-keyword headers and had no size limit.
+- Home page said "4 challenges"; the count is now computed (27).
+
+### Security
+- Upgraded Next.js to 16.4.6 (critical advisories); `npm audit --omit=dev` is 0.
+- Challenge mode is read-only (statement allowlist, query_only pragma, fail-closed start-up).
+- Added Content Security Policy, HSTS and related headers.
+
+### Added
+- 109 unit tests, 8 browser tests, GitHub Actions CI, MIT license, docs/ (AUDIT, ARCHITECTURE, SECURITY, VERIFICATION).
+
 ### Fixed (visual/correctness overhaul)
 - **Cascade-layers bug**: custom component classes (`.clay-card`, `.clay-btn`)
   were plain/unlayered CSS, which under Tailwind v4's cascade-layers model
