@@ -17,6 +17,7 @@ import initSqlJs, { type Database } from "sql.js";
 import { prepareStatement } from "./guard";
 
 let db: Database | null = null;
+let readOnly = true;
 
 type InMessage = { type: "init"; seedSql: string; readOnly?: boolean } | { type: "run"; sql: string };
 
@@ -39,11 +40,19 @@ self.onmessage = async (event: MessageEvent<InMessage>) => {
         // always resolve to it regardless of what path sql.js requests.
         locateFile: () => "/sql-wasm.wasm",
       });
-      db = new SQL.Database();
-      db.run(msg.seedSql);
-      // Challenge mode: refuse writes (DROP, DELETE, INSERT ... RETURNING) after seeding,
-      // so a learner cannot break the sample data or fake a result.
-      if (msg.readOnly) db.run("PRAGMA query_only = ON");
+      // Fail closed: build in a local, publish only after the seed and the
+      // read-only pragma both succeeded. Anything but an explicit false is read-only.
+      db = null;
+      const next = new SQL.Database();
+      try {
+        next.run(msg.seedSql);
+        readOnly = msg.readOnly !== false;
+        if (readOnly) next.run("PRAGMA query_only = ON");
+      } catch (err) {
+        next.close();
+        throw err;
+      }
+      db = next;
       post({ type: "ready" });
       return;
     }
@@ -53,12 +62,14 @@ self.onmessage = async (event: MessageEvent<InMessage>) => {
         post({ type: "error", message: "Database not initialized yet." });
         return;
       }
-      const prepared = prepareStatement(msg.sql);
+      const prepared = prepareStatement(msg.sql, { readOnly });
       if (!prepared.ok) {
         post({ type: "error", message: prepared.message });
         return;
       }
 
+      // Defense in depth: re-assert the pragma before every statement.
+      if (readOnly) db.run("PRAGMA query_only = ON");
       const results = db.exec(prepared.sql);
       if (results.length === 0) {
         post({ type: "result", columns: [], rows: [] });

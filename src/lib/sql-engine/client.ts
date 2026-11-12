@@ -23,7 +23,7 @@ export class SqlEngine {
 
   constructor(seedSql: string, options: { readOnly?: boolean } = {}) {
     this.seedSql = seedSql;
-    this.readOnly = options.readOnly ?? false;
+    this.readOnly = options.readOnly ?? true; // deny writes unless a caller opts in
   }
 
   private spawnWorker(): Promise<void> {

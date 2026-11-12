@@ -5,10 +5,13 @@ import {
   HeroStaticRadialGradient,
   type HeroStaticRadialGradientTechItem,
 } from "@/components/ui/hero-static-radial-gradient";
+import { chapters } from "@/lib/game/chapters";
+
+const challengeCount = chapters.reduce((n, c) => n + c.challenges.length, 0);
 
 const techStack: HeroStaticRadialGradientTechItem[] = [
   { name: "Real SQLite", icon: Database },
-  { name: "4 challenges", icon: Trophy },
+  { name: `${challengeCount} challenges`, icon: Trophy },
   { name: "Instant feedback", icon: Zap },
 ];
 

@@ -15,7 +15,7 @@ export function SqlExplorer({ dataset, onBack }: { dataset: Dataset; onBack: () 
   const engineRef = useRef<SqlEngine | null>(null);
 
   useEffect(() => {
-    engineRef.current = new SqlEngine(dataset.seedSql);
+    engineRef.current = new SqlEngine(dataset.seedSql, { readOnly: false });
     return () => engineRef.current?.dispose();
   }, [dataset.seedSql]);
 

@@ -46,14 +46,45 @@ test("a runaway query is stopped instead of freezing the tab", async ({ page }) 
   await expect(page.getByText(/took too long/)).toBeVisible({ timeout: 8000 });
 });
 
-test("challenge mode is read-only: DROP TABLE is refused and the challenge still works", async ({ page }) => {
+test("challenge mode is read-only: PRAGMA, DROP and writes are refused and the challenge still works", async ({ page }) => {
   await page.goto("/chapter/ch1-select-basics/challenge/ch1-q3");
   const box = page.locator("textarea");
   const run = page.getByRole("button", { name: "Run query" });
-  await box.fill("DROP TABLE snacks");
-  await run.click();
-  await expect(page.getByText(/readonly|read-only|read only/i)).toBeVisible();
+  for (const sql of ["PRAGMA query_only = OFF", "DROP TABLE snacks", "DELETE FROM snacks"]) {
+    await box.fill(sql);
+    await run.click();
+    await expect(page.getByText("Challenges are read-only: only SELECT queries are allowed here.")).toBeVisible();
+  }
   await box.fill("SELECT name, price FROM snacks ORDER BY price DESC");
   await run.click();
   await expect(page.getByText("Nice work! That's correct.")).toBeVisible();
+});
+
+test("Explore mode still allows writes", async ({ page }) => {
+  await openExplorer(page);
+  const box = page.locator("textarea").first();
+  const run = page.getByRole("button", { name: "Run query" });
+  await box.fill("DELETE FROM snacks WHERE id = 1");
+  await run.click();
+  await box.fill("SELECT COUNT(*) AS n FROM snacks");
+  await run.click();
+  await expect(page.getByRole("cell", { name: "5", exact: true })).toBeVisible();
+});
+
+test("pages make no requests to other origins", async ({ page }) => {
+  const foreign: string[] = [];
+  page.on("request", (r) => {
+    const u = r.url();
+    if (!u.startsWith("http://127.0.0.1:3123") && !u.startsWith("data:") && !u.startsWith("blob:")) foreign.push(u);
+  });
+  for (const path of ["/", "/explore", "/shop", "/chapter/ch1-select-basics", "/chapter/ch1-select-basics/challenge/ch1-q1"]) {
+    await page.goto(path);
+    await page.waitForLoadState("networkidle");
+  }
+  expect(foreign).toEqual([]);
+});
+
+test("the home page states the real challenge count", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("24 challenges")).toBeVisible();
 });
