@@ -86,5 +86,5 @@ test("pages make no requests to other origins", async ({ page }) => {
 
 test("the home page states the real challenge count", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByText("24 challenges")).toBeVisible();
+  await expect(page.getByText("27 challenges")).toBeVisible();
 });
