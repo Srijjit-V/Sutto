@@ -34,11 +34,15 @@ export function checkResult(challenge: Challenge, result: QueryResult): CheckOut
   }
 
   if (challenge.orderMatters === false) {
-    const normalize = (rows: unknown[][]) => rows.map((r) => JSON.stringify(r)).sort();
-    const expected = normalize(challenge.expectedRows);
-    const actual = normalize(result.rows);
-    const passed = expected.every((row, i) => row === actual[i]);
-    return passed ? { passed: true } : { passed: false, reason: "The rows don't match the expected set." };
+    // Multiset match using the same cell comparison as ordered mode, so float
+    // rounding noise is tolerated here too.
+    const remaining = [...result.rows];
+    for (const expected of challenge.expectedRows) {
+      const at = remaining.findIndex((row) => rowsEqual(row, expected));
+      if (at === -1) return { passed: false, reason: "The rows don't match the expected set." };
+      remaining.splice(at, 1);
+    }
+    return { passed: true };
   }
 
   for (let i = 0; i < challenge.expectedRows.length; i++) {

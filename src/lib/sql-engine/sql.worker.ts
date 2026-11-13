@@ -6,7 +6,7 @@
  * worker from the main thread, instead of freezing the whole tab.
  *
  * Protocol (all messages are structured-clonable objects):
- *  -> { type: "init", seedSql: string }
+ *  -> { type: "init", seedSql: string, readOnly?: boolean }
  *  <- { type: "ready" } | { type: "error", message: string }
  *  -> { type: "run", sql: string }
  *  <- { type: "result", columns: string[], rows: unknown[][] }
@@ -14,10 +14,12 @@
  */
 
 import initSqlJs, { type Database } from "sql.js";
+import { prepareStatement } from "./guard";
 
 let db: Database | null = null;
+let readOnly = true;
 
-type InMessage = { type: "init"; seedSql: string } | { type: "run"; sql: string };
+type InMessage = { type: "init"; seedSql: string; readOnly?: boolean } | { type: "run"; sql: string };
 
 type OutMessage =
   | { type: "ready" }
@@ -38,8 +40,19 @@ self.onmessage = async (event: MessageEvent<InMessage>) => {
         // always resolve to it regardless of what path sql.js requests.
         locateFile: () => "/sql-wasm.wasm",
       });
-      db = new SQL.Database();
-      db.run(msg.seedSql);
+      // Fail closed: build in a local, publish only after the seed and the
+      // read-only pragma both succeeded. Anything but an explicit false is read-only.
+      db = null;
+      const next = new SQL.Database();
+      try {
+        next.run(msg.seedSql);
+        readOnly = msg.readOnly !== false;
+        if (readOnly) next.run("PRAGMA query_only = ON");
+      } catch (err) {
+        next.close();
+        throw err;
+      }
+      db = next;
       post({ type: "ready" });
       return;
     }
@@ -49,19 +62,15 @@ self.onmessage = async (event: MessageEvent<InMessage>) => {
         post({ type: "error", message: "Database not initialized yet." });
         return;
       }
-      // Basic complexity guard: reject multi-statement queries (anything
-      // after the first non-trailing semicolon) so one message can't chain
-      // an unbounded number of statements.
-      const trimmed = msg.sql.trim().replace(/;\s*$/, "");
-      if (trimmed.includes(";")) {
-        post({
-          type: "error",
-          message: "Only a single SQL statement is allowed per run.",
-        });
+      const prepared = prepareStatement(msg.sql, { readOnly });
+      if (!prepared.ok) {
+        post({ type: "error", message: prepared.message });
         return;
       }
 
-      const results = db.exec(trimmed);
+      // Defense in depth: re-assert the pragma before every statement.
+      if (readOnly) db.run("PRAGMA query_only = ON");
+      const results = db.exec(prepared.sql);
       if (results.length === 0) {
         post({ type: "result", columns: [], rows: [] });
         return;

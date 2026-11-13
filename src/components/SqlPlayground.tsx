@@ -23,7 +23,7 @@ export function SqlPlayground({ chapter, challenge }: { chapter: Chapter; challe
   // whenever the player navigates to a different challenge, so all state
   // above is naturally reset without an effect.
   useEffect(() => {
-    engineRef.current = new SqlEngine(chapter.seedSql);
+    engineRef.current = new SqlEngine(chapter.seedSql, { readOnly: true });
     return () => engineRef.current?.dispose();
   }, [chapter.seedSql]);
 
